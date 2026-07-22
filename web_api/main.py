@@ -1,10 +1,14 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
+from prometheus_fastapi_instrumentator import Instrumentator
 import sqlite3
 import os
 from datetime import datetime
 
 app = FastAPI(title="DevBuddy AI Web API")
+
+# Instrument the FastAPI app to expose /metrics
+Instrumentator().instrument(app).expose(app)
 
 # Use a local database for the web container
 DB_PATH = os.path.join(os.path.dirname(__file__), "web_devbuddy.db")

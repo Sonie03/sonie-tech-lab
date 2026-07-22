@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: devbuddy-app
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/Sonie03/sonie-tech-lab.git'
+    targetRevision: HEAD
+    # Argo CD will recursively scan this folder for all Kubernetes YAMLs
+    path: k8s
+  destination:
+    # Deploy to the same cluster that Argo CD is running in
+    server: 'https://kubernetes.default.svc'
+    namespace: default
+  syncPolicy:
+    # Automatically sync changes from GitHub to the Kubernetes cluster
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
