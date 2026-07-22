@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: devbuddy-api
+  labels:
+    app: devbuddy
+spec:
+  # The Deployment manages a ReplicaSet. We start with 3 replicas for high availability.
+  replicas: 3
+  
+  # The selector tells the Deployment which Pods it manages (those matching app: devbuddy)
+  selector:
+    matchLabels:
+      app: devbuddy
+      
+  # The template describes exactly how to create the Pods
+  template:
+    metadata:
+      labels:
+        app: devbuddy
+    spec:
+      containers:
+      - name: devbuddy-api
+        image: your-dockerhub-username/devbuddy-api:latest # Replace with your actual image
+        
+        # Ports exposed by the container
+        ports:
+        - containerPort: 80
+        
+        # Resource requests and limits (Crucial for Autoscaling)
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "250m"
+            memory: "256Mi"
+            
+        # Liveness Probe: K8s checks this to see if the app is frozen/crashed.
+        # If it fails, K8s automatically kills the container and starts a new one (Self-Healing!)
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          
+        # Readiness Probe: K8s checks this before sending user traffic to the Pod.
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 2
+          periodSeconds: 5

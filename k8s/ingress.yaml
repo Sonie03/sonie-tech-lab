@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: devbuddy-ingress
+  annotations:
+    # We define the ingress class (commonly NGINX in many clusters)
+    kubernetes.io/ingress.class: "nginx"
+    # Optional: SSL/HTTPS configuration can be added here (e.g. cert-manager)
+spec:
+  rules:
+  - host: api.devbuddy.com # The domain name pointing to your cluster
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            # This routes all external traffic for api.devbuddy.com to our internal Service
+            name: devbuddy-service
+            port:
+              number: 80

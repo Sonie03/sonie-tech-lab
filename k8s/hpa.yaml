@@ -1,0 +1,25 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: devbuddy-hpa
+spec:
+  # This HPA targets the Deployment we created earlier
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: devbuddy-api
+    
+  # Limits for scaling
+  minReplicas: 3
+  maxReplicas: 10
+  
+  # The rules for scaling up
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        # If the average CPU utilization across all Pods exceeds 70%, 
+        # Kubernetes will spin up more Pods (up to 10 max).
+        averageUtilization: 70
